@@ -1,4 +1,4 @@
-# exercise-1: Create a pod, execute commands inside then delete it
+# Create a pod, execute commands inside then delete it
 
 In this exercise, you will create an Nginx and modify the served content.
 Then you will connect to it.
@@ -30,42 +30,46 @@ Then create the pod:
 kubectl create -f nginx.yml
 ```
 
-## List all the pods and see their status
-
+List all the pods and see their status
 ```sh
 kubectl get pods -o wide
 ```
 
-Note the IP of the nginx POD.
+Note the IP of the nginx pod : <IP_POD>
 
 ## Execute a Shell inside the nginx container:
-
+Enter the pod and use an interactive shell
 ```sh
 kubectl exec -it nginx -- /bin/bash
 ```
 
-## List all the folders inside the root directory:
-
+List all the folders inside the root directory:
 ```
 ls -l /
 ```
 
-## Create an `index.html` file with the content "Hello shell demo" inside `/usr/share/nginx/html/`
-
+Create an `index.html` file with the content "Hello shell demo" inside `/usr/share/nginx/html/`
 ```sh
 echo Hello shell demo > /usr/share/nginx/html/index.html
 ```
 
-## Test the nginx server
-
-You must see the "Hello shell demo" string:
+Test the nginx server from within.
 ```sh
 curl http://localhost
 curl http://<IP_POD>
 ```
+You should see the "Hello shell demo" string.
 
 ## Leave the container and delete the pod:
+```sh
+exit
+```
 
 ```sh
 kubectl delete pod nginx
+```
+
+List all the pods and see their status
+```sh
+kubectl get pods -o wide
 ```

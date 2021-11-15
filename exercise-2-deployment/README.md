@@ -1,4 +1,4 @@
-# exercise-3: deployments to ensure pods are running
+# Use deployments to ensure pods are running
 
 In this exercise, you will deploy pods via deployment resources.
 You will see the interests of using deployment:
@@ -19,7 +19,7 @@ spec:
   replicas-numberOf: 2
   selector:
     matchLabels:
-      app: hello-dep 
+      app: hello-dep
   template:
     metadata:
       labels:
@@ -45,7 +45,7 @@ kubectl get deployment,pods
 
 Now delete one of the 2 created pod:
 ```sh
-kubectl delete pod/hello-dep-XXXX
+kubectl delete pod/hello-dep-<XXXX>
 ```
 
 Wait few seconds to see a replacement pod for the one you deleted:
@@ -54,6 +54,7 @@ kubectl get deployment,pods
 ```
 
 ## Deploy the version 2.0
+Create the following file
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -64,7 +65,7 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: hello-dep 
+      app: hello-dep
   template:
     metadata:
       labels:
@@ -88,6 +89,11 @@ kubectl apply -f hello-v2.yml
 You will change the number of replicas:
 ```sh
 kubectl scale deployment hello-dep --replicas=3
+```
+
+Wait few seconds and count the pods:
+```sh
+kubectl get deployment,pods
 ```
 
 ## Clean all the resources
