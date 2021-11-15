@@ -1,4 +1,4 @@
-# exercise-1: A secret and a configmap for a database.
+# Using secret and a configmap for a database.
 
 In this exercise, you will create a k8s secret as well as a k8s configmap to correctly configure a MariaDB database.
 
@@ -7,19 +7,21 @@ In this exercise, you will create a k8s secret as well as a k8s configmap to cor
 ## Create the MYSQL_ROOT_PASSWORD secret
 
 Generate a base-64 encoded string:
-```
+```sh
 echo -n 'KubernetesTraining!' | base64
 ```
 
 Note the value and put it in the secret definition:
-```
+```sh
+cat << EOF > mysql-secret.yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mariadb-root-password 
+  name: mariadb-root-password
 type: Opaque
 data:
   password: YOUR_VALUE
+EOF
 ```
 
 Then, create the `mariadb-root-password` secret:
@@ -27,14 +29,14 @@ Then, create the `mariadb-root-password` secret:
 kubectl apply -f mysql-secret.yaml
 ```
 
-## View the secret:
+View the secret:
 
 ```sh
 kubectl describe secret mariadb-root-password
 kubectl get secret mariadb-root-password -o jsonpath='{.data.password}' | base64 -d
 ```
 
-## Create a secret for the db user - second way to create a secret
+Create a secret for the db user - second way to create a secret
 
 ```sh
 kubectl create secret generic mariadb-user-creds \
@@ -42,8 +44,7 @@ kubectl create secret generic mariadb-user-creds \
       --from-literal=MYSQL_PASSWORD=KubernetesTraining
 ```
 
-## View the secret:
-
+View the secret:
 You are a k8s ninja!
 You know how to do that.
 
@@ -52,6 +53,11 @@ You know how to do that.
 ## Create a configMap to configure the mariadb application
 
 ```sh
+cat << EOF > max_allowed_packet.cnf
+[mysqld]
+max_allowed_packet = 64M
+EOF
+
 kubectl create configmap mariadb-config --from-file=max_allowed_packet.cnf
 ```
 
@@ -68,6 +74,40 @@ kubectl get configmap mariadb-config -o yaml
 
 * `mariadb-root-password`: key/value pair
 * `mariadb-user-creds`: key/value pair
+
+Create a mariaDb Deployment file
+```sh
+cat << EOF > mariadb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: docker.io/mariadb:10.4
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mariadb-volume-1
+      volumes:
+      - emptyDir: {}
+        name: mariadb-volume-1
+EOF
+```
 
 Both elements must be added in the deployment:
 
@@ -92,7 +132,7 @@ envFrom:
 
 Add your ConfigMap as source, adding it to `volumes` entry of the pod spec. Then add a `volumeMount` to the container definition.
 
-Use the configMap as a `volumeMount` to `/etc/mysql/conf.d` 
+Use the configMap as a `volumeMount` to `/etc/mysql/conf.d`
 
 ```
 <...>
@@ -120,12 +160,12 @@ volumes:
 ```
 ## Create the deployment
 
-```sh 
+```sh
 kubectl create -f mariadb-deployment.yaml
 ```
 
 Verify the pod uses the Secrets and ConfigMap
-```
+```sh
 kubectl exec -it [pod-id] -- env |grep MYSQL
 kubectl exec -it [pod-id] -- ls /etc/mysql/conf.d
 
@@ -146,7 +186,3 @@ kubectl delete deployment mariadb-deployment
 kubectl delete cm mariadb-config
 kubectl delete secret mariadb-root-password mariadb-user-creds
 ```
-
-
-
-

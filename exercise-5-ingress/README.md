@@ -98,7 +98,7 @@ Connect to the services via the new Ingress.
 Test URLs `/v1` and `/v2`.
 
 ## Clean
-```
+```sh
 kubectl delete ingress basic-ingress
 kubectl delete ingress fanout-ingress
 kubectl delete pod web
