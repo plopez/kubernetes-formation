@@ -1,7 +1,6 @@
-# exercise-6: IngressRules
+# Use Ingress and IngressRules
 
 In this exercise, you will create an application pod `/v1` and expose it through an Ingress targetting a Service.
-
 
 Then you will create a second version of the application (`/v2`) and manage the routing via another Ingress.
 
@@ -21,7 +20,8 @@ kubectl get service web
 ## Create an Ingress resource without path based routing rules
 
 Here is the Ingress definition file:
-```
+```sh
+cat << EOF > basic-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -32,6 +32,7 @@ spec:
       name: oueb
       port:
         number: 666
+EOF
 ```
 
 Create the ingress. Be carefull, it may be incorrect regarding the service we want to target...
@@ -45,8 +46,6 @@ kubectl get ingress basic-ingress
 ```
 
 Test the connectivity - what is the URL to connect on ?
-* On GKE, see the External IP
-* On OVHCLoud, see the NodePort of the Nginx ingress controller `kubectl get svc ingress-nginx-controller -n ingress-nginx`
 
 ## Deploy a second version of the application
 
@@ -57,7 +56,8 @@ kubectl expose deployment web2 --target-port=8080 --type=NodePort
 ```
 
 Create a new Ingress with the routing rules:
-```
+```sh
+cat << EOF > fanout-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -80,6 +80,7 @@ spec:
             name: web2
             port:
               number: 8080
+EOF
 ```
 
 ```sh
@@ -92,7 +93,7 @@ Ensure the ingress is correctly created (it can take some time):
 kubectl get ingress fanout-ingress
 ```
 
-Connect to the services via the new Ingress. 
+Connect to the services via the new Ingress.
 
 Test URLs `/v1` and `/v2`.
 
