@@ -1,4 +1,4 @@
-# exercise-2: RBAC
+# RBAC
 
 In this exercise, you will create a configmap and try to get the config map from a pod, using a service account.
 
@@ -10,6 +10,20 @@ kubectl create serviceaccount myapp
 
 Create a pod associated with the service account `myapp`:
 ```sh
+cat << EOF > pod-sa.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-sa
+spec:
+  serviceAccountName: myapp-to-rule-the-world
+  containers:
+   - image: roffe/kubectl
+     imagePullPolicy: Always
+     name: kubectl
+     command: [ "bash", "-c", "--" ]
+     args: [ "while true; do sleep 30; done;" ]
+EOF
 kubectl create -f pod-sa.yaml
 ```
 
@@ -33,11 +47,37 @@ Can you explain what happened ?
 
 Create a Role:
 ```sh
+cat << EOF > role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: configmap-reader
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "watch", "list"]
+EOF
+
 kubectl create -f role.yaml
 ```
 
 Create a RoleBinding:
 ```sh
+cat << EOF > binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: configmap-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: configmap-reader
+subjects:
+- apiGroup: ""
+  kind: ServiceAccount
+  name: myapp
+EOF
+
 kubectl create -f binding.yaml
 ```
 
