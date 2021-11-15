@@ -1,11 +1,12 @@
-# exercise-5: Cluster IP
+# Services : Cluster IP
 
 You will create a Cluster IP service and access it.
 
 ## Create a Deployment
 
 Here is the deployment file:
-```
+```sh
+cat << EOF > deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,16 +26,18 @@ spec:
       containers:
       - name: hello
         image: "gcr.io/google-samples/hello-app:2.0"
+EOF
 ```
 
-```sh 
+```sh
 kubectl apply -f deployment.yaml
 ```
 
 ## Create a Cluster IP service
 
 Here is the service file:
-```
+```sh
+cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -48,13 +51,14 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 8080
+EOF
 ```
- 
-```sh 
+
+```sh
 kubectl apply -f service.yaml
 ```
 
-Ensure the service has entries in its `endpoints`... if not, correct the `service.yaml` because it may be incorrect!
+Ensure the service has entries in its endpoints... if not, correct the `service.yaml` because it may be incorrect!
 
 To see the endpoints:
 ```sh

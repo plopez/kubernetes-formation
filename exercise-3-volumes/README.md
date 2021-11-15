@@ -14,19 +14,7 @@ kubectl get storageClass
 kubectl describe storageClass [name storageClass]
 ```
 
-Create a Persistent Volume Claim to ask a 1Gi R/W storage. Here is the claim declaration:
-```
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: task-pv-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-```
+Create a Persistent Volume Claim to ask a 1Gi R/W storage.
 
 Declare the claim (be carefull, the provided `.yaml` file may be incorrect....)
 ```sh
@@ -94,7 +82,7 @@ kubectl get pv,pod -o wide
 ```
 
 Now, write content to the persistent volume:
-```
+```sh
 kubectl exec -it task-pv-pod -- bash
 echo 'K8s rules!' > /usr/share/nginx/html/index.html
 curl http://localhost
@@ -121,7 +109,7 @@ Apply the changes.
 Is it possible?
 
 ## Clean
-```
+```sh
 kubectl delete pvc task-pv-claim
-kubectl delete po task-pv-pod
+kubectl delete pod task-pv-pod
 ```

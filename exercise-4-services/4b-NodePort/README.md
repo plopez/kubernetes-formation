@@ -1,11 +1,12 @@
-# exercise-5: Node Port
+# Service : Node Port
 
 You will create a Node Port service and access it.
 
 ## Create a Deployment
 
 Here is the deployment file:
-```
+```sh
+cat << EOF > my-deployment-50000.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,15 +29,17 @@ spec:
         env:
         - name: "PORT"
           value: "50000"
+EOF
 ```
 
-```sh 
+```sh
 kubectl apply -f my-deployment-50000.yaml
 ```
 
 ## Create a Node Port service
 
-```
+```sh
+cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -51,13 +54,14 @@ spec:
     port: 80
     targetPort: 50000
     # nodePort: 30007   # NOTE: we dont set the nodePort, it will be taken randomly by default
+EOF
 ```
 
-```sh 
+```sh
 kubectl apply -f service.yaml
 ```
 
-Ensure the service has entries in its `endpoints`:
+Ensure the service has entries in its endpoints:
 ```sh
 kubectl describe svc my-np-service
 ```
@@ -65,7 +69,7 @@ kubectl describe svc my-np-service
 ## Test the service connectivity
 
 Determine the public IP of any worker node:
-```
+```sh
 kubectl get nodes --output wide
 ```
 

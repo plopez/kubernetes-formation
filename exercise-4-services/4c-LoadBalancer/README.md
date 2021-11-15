@@ -1,11 +1,12 @@
-# exercise-5: Load Balancer
+# Service: Load Balancer
 
 You will create a Load Balancer service and access it.
 
 ## Create a Deployment
 
 Here is the deployment file:
-```
+```sh
+cat << EOF > my-deployment-50001.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,16 +29,18 @@ spec:
         env:
         - name: "PORT"
           value: "50001"
+EOF
 ```
 
-```sh 
+```sh
 kubectl apply -f my-deployment-50001.yaml
 ```
 
 ## Create a LoadBalancer service
 
 Here is the service file:
-```
+```sh
+cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -51,9 +54,10 @@ spec:
   - protocol: TCP
     port: 60000
     targetPort: 50001
+EOF
 ```
 
-```sh 
+```sh
 kubectl apply -f service.yaml
 ```
 
@@ -73,5 +77,3 @@ Access the service (It may take minutes for the LB to be configured)
 
 ```sh
 kubectl  delete -f .
-
-
