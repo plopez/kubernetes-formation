@@ -5,7 +5,7 @@ You will create a Node Port service and access it.
 ## Create a Deployment
 
 Here is the deployment file:
-```sh
+```console
 cat << EOF > my-deployment-50000.yaml
 apiVersion: apps/v1
 kind: Deployment
