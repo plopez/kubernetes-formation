@@ -5,8 +5,8 @@ You will create a Load Balancer service and access it.
 ## Create a Deployment
 
 Here is the deployment file:
-```sh
-cat << EOF > my-deployment-50001.yaml
+```console
+$ cat << EOF > my-deployment-50001.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,15 +32,15 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f my-deployment-50001.yaml
+```console
+$ kubectl apply -f my-deployment-50001.yaml
 ```
 
 ## Create a LoadBalancer service
 
 Here is the service file:
-```sh
-cat << EOF > service.yaml
+```console
+$ cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -57,15 +57,15 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f service.yaml
+```console
+$ kubectl apply -f service.yaml
 ```
 
 ## Test the service connectivity
 
 Get the LB external IP:
-```sh
-kubectl get service my-lb-service -o wide
+```console
+$ kubectl get service my-lb-service -o wide
 ```
 
 Access the service (It may take minutes for the LB to be configured)
@@ -75,5 +75,6 @@ Access the service (It may take minutes for the LB to be configured)
 
 ## Clean all resources
 
-```sh
-kubectl  delete -f .
+```console
+$ kubectl  delete -f .
+```
