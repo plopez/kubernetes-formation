@@ -34,6 +34,7 @@ EOF
 
 ```console
 $ kubectl apply -f my-deployment-50001.yaml
+deployment.apps/my-deployment-50001 created
 ```
 
 ## Create a LoadBalancer service
@@ -59,6 +60,7 @@ EOF
 
 ```console
 $ kubectl apply -f service.yaml
+service/my-lb-service created
 ```
 
 ## Test the service connectivity
@@ -66,11 +68,16 @@ $ kubectl apply -f service.yaml
 Get the LB external IP:
 ```console
 $ kubectl get service my-lb-service -o wide
+NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)           AGE   SELECTOR
+my-lb-service   LoadBalancer   10.43.175.183   10.66.250.29   60000:32486/TCP   29s   app=products,department=sales
 ```
 
 Access the service (It may take minutes for the LB to be configured)
-```
-[LOAD_BALANCER_ADDRESS]:60000
+```console
+$ curl http://212.47.251.109:60000
+Hello, world!
+Version: 2.0.0
+Hostname: my-deployment-50001-5666887c6-f2q6j
 ```
 
 ## Clean all resources
