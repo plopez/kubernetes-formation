@@ -89,13 +89,13 @@ Events:                   <none>
 Determine the public IP of any worker node:
 ```console
 $ kubectl get nodes --output wide
-NAME    STATUS   ROLES                  AGE   VERSION        INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION     CONTAINER-RUNTIME
-abhra   Ready    control-plane,master   60d   v1.20.5+k3s1   10.66.250.29   <none>        Debian GNU/Linux 11 (bullseye)   5.10.46-scaleway   containerd://1.4.4-k3s1
+NAME    STATUS   ROLES                  AGE   VERSION        INTERNAL-IP    EXTERNAL-IP           OS-IMAGE                         KERNEL-VERSION     CONTAINER-RUNTIME
+abhra   Ready    control-plane,master   60d   v1.20.5+k3s1   10.66.250.29   212.47.251.109        Debian GNU/Linux 11 (bullseye)   5.10.46-scaleway   containerd://1.4.4-k3s1
 ```
 
 Access the service
 ```console
-$curl http://212.47.251.109:32684
+$ curl http://212.47.251.109:32684
 Hello, world!
 Version: 2.0.0
 Hostname: my-deployment-50000-76c87b77b7-v8jsh
