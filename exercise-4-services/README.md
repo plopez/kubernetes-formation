@@ -1,4 +1,4 @@
-# exercise-5: services
+# Use various services
 
 You will explore the different types of services proposed by kubernetes:
 
@@ -7,6 +7,6 @@ You will explore the different types of services proposed by kubernetes:
 3. Create a LoadBalancer service
 4. Clean the resources:
 ```console
-$ kubectl delete services my-cip-service my-np-service my-lb-service
-$ kubectl delete deployments my-deployment my-deployment-50000 my-deployment-50001
+   $ kubectl delete services my-cip-service my-np-service my-lb-service
+   $ kubectl delete deployments my-deployment my-deployment-50000 my-deployment-50001
 ```
