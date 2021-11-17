@@ -5,8 +5,8 @@ You will create a Cluster IP service and access it.
 ## Create a Deployment
 
 Here is the deployment file:
-```sh
-cat << EOF > deployment.yaml
+```console
+$ cat << EOF > deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,15 +29,11 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f deployment.yaml
-```
-
 ## Create a Cluster IP service
 
 Here is the service file:
-```sh
-cat << EOF > service.yaml
+```console
+$ cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -46,7 +42,7 @@ spec:
   type: ClusterIP
   selector:
     app: metrics
-    department: ingeneering
+    department: inferno
   ports:
   - protocol: TCP
     port: 80
@@ -54,37 +50,32 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f service.yaml
-```
-
 Ensure the service has entries in its endpoints... if not, correct the `service.yaml` because it may be incorrect!
 
 To see the endpoints:
-```sh
-kubectl describe svc my-cip-service
+```console
+$ kubectl describe svc my-cip-service
 ```
 
 ## Test the service connectivity
 
 Determine the CLUSTER IP
-```sh
-kubectl get service my-cip-service -o wide
+```console
+$ kubectl get service my-cip-service -o wide
 ```
 
-Access the service: try the [CLUSTER_IP]:80. This does not work. Why? How can you access the service?
+Access the service: try the [CLUSTER_IP]:80. This does not work. How can you access the service?
 
-Execute a shell inside a pod of the service:
-```sh
-kubectl exec -it  my-deployment-7bc95fb476-q75rz /bin/sh
-# Install curl
-apk add --no-cache curl
-```
-
+Execute a console shell inside a pod of the service
 Try the curl on http://my-cip-service.default.svc.cluster.local:80
+```console
+$ kubectl exec -it  my-deployment-7bc95fb476-q75rz sh
+/ # apk add --no-cache curl
+/ # curl http://my-cip-service.default.svc.cluster.local:80
+```
 
 ## Clean all resources
 
-```sh
-kubectl  delete -f .
+```console
+$ kubectl  delete -f .
 ```

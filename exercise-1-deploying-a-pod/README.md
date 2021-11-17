@@ -5,9 +5,12 @@ Then you will connect to it.
 
 ## Start the pod
 
-Create a `nginx.yaml` file to declare the nginx pod:
+Check that kubectl CLI is installed
 
-```
+
+Create a `nginx.yaml` file to declare the nginx pod:
+```console
+$ cat << EOF > nginx.yml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -23,53 +26,38 @@ spec:
     args: ["-g", "daemon off;", "-q"]
     ports:
     - containerPort: 80
+EOF
 ```
 
-Then create the pod:
-```sh
-kubectl create -f nginx.yml
+Then create the pod using this YAML file
+```console
+$ kubectl create -f nginx.yml
 ```
 
 List all the pods and see their status
-```sh
-kubectl get pods -o wide
-```
-
 Note the IP of the nginx pod : <IP_POD>
 
 ## Execute a Shell inside the nginx container:
 Enter the pod and use an interactive shell
-```sh
-kubectl exec -it nginx -- /bin/bash
+```console
+$ kubectl exec -it nginx -- /bin/bash
+root@nginx:/#
 ```
 
 List all the folders inside the root directory:
-```
-ls -l /
-```
-
 Create an `index.html` file with the content "Hello shell demo" inside `/usr/share/nginx/html/`
-```sh
-echo Hello shell demo > /usr/share/nginx/html/index.html
-```
-
 Test the nginx server from within.
-```sh
-curl http://localhost
-curl http://<IP_POD>
-```
 You should see the "Hello shell demo" string.
 
 ## Leave the container and delete the pod:
-```sh
-exit
+```console
+root@nginx:/# exit
 ```
 
-```sh
-kubectl delete pod nginx
+```console
+$ kubectl delete pod nginx
 ```
 
 List all the pods and see their status
-```sh
-kubectl get pods -o wide
-```
+
+## Congrats, you're done !

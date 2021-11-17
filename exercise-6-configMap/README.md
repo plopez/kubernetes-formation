@@ -7,66 +7,59 @@ In this exercise, you will create a k8s secret as well as a k8s configmap to cor
 ## Create the MYSQL_ROOT_PASSWORD secret
 
 Generate a base-64 encoded string:
-```sh
-echo -n 'KubernetesTraining!' | base64
+```console
+$ echo -n 'KubernetesTraining!' | base64
 ```
 
 Note the value and put it in the secret definition:
-```sh
-cat << EOF > mysql-secret.yaml
+```console
+$ cat << EOF > mysql-secret.yaml
 apiVersion: v1
 kind: Secret
 metadata:
   name: mariadb-root-password
 type: Opaque
 data:
-  password: YOUR_VALUE
+  password: <YOUR_VALUE>
 EOF
 ```
 
-Then, create the `mariadb-root-password` secret:
-```sh
-kubectl apply -f mysql-secret.yaml
-```
+Then, create the `mariadb-root-password` secret.
+View the secret
 
-View the secret:
-
-```sh
-kubectl describe secret mariadb-root-password
-kubectl get secret mariadb-root-password -o jsonpath='{.data.password}' | base64 -d
+```console
+$ kubectl describe secret mariadb-root-password
+$ kubectl get secret mariadb-root-password -o jsonpath='{.data.password}' | base64 -d
 ```
 
 Create a secret for the db user - second way to create a secret
 
-```sh
-kubectl create secret generic mariadb-user-creds \
+```console
+$ kubectl create secret generic mariadb-user-creds \
       --from-literal=MYSQL_USER=kubeuser\
       --from-literal=MYSQL_PASSWORD=KubernetesTraining
+secret/mariadb-user-creds created
 ```
 
-View the secret:
-You are a k8s ninja!
-You know how to do that.
+View the secret.
 
 # ConfigMap
 
 ## Create a configMap to configure the mariadb application
 
-```sh
-cat << EOF > max_allowed_packet.cnf
+```console
+$ cat << EOF > max_allowed_packet.cnf
 [mysqld]
 max_allowed_packet = 64M
 EOF
 
-kubectl create configmap mariadb-config --from-file=max_allowed_packet.cnf
+$ kubectl create configmap mariadb-config --from-file=max_allowed_packet.cnf
 ```
 
 Edit the configMap to change the value 32M to `max_allowed_packet`.
 
-View the configmap:
-```sh
-kubectl get configmap mariadb-config -o yaml
-```
+
+View the configmap
 
 # Use the secrets and configMap
 
@@ -76,8 +69,8 @@ kubectl get configmap mariadb-config -o yaml
 * `mariadb-user-creds`: key/value pair
 
 Create a mariaDb Deployment file
-```sh
-cat << EOF > mariadb-deployment.yaml
+```console
+$ cat << EOF > mariadb-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -156,33 +149,40 @@ volumes:
   name: mariadb-config-volume
 
 <...>
-
 ```
+
 ## Create the deployment
 
-```sh
-kubectl create -f mariadb-deployment.yaml
+```console
+$ kubectl create -f mariadb-deployment.yaml
 ```
 
 Verify the pod uses the Secrets and ConfigMap
-```sh
-kubectl exec -it [pod-id] -- env |grep MYSQL
-kubectl exec -it [pod-id] -- ls /etc/mysql/conf.d
-
-kubectl exec -it [pod-id] -- cat /etc/mysql/conf.d/max_allowed_packet.cnf
+```console
+$ kubectl get pods
+$ kubectl exec -it mariadb-deployment-<xxx>  -- env | grep MYSQL
+$ kubectl exec -it mariadb-deployment-<xxx>  -- ls /etc/mysql/conf.d
+$ kubectl exec -it mariadb-deployment-<xxx> -- cat <xxx>/max_allowed_packet.cnf
 ```
 
 ## Check if it works
-```sh
-kubectl exec -it [pod-id] -- /bin/sh
-
-mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e 'show databases;'
-mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e "SHOW VARIABLES LIKE 'max_allowed_packet';"
+```console
+$ kubectl get pods
+$ kubectl exec -it mariadb-deployment-<xxx> -- /bin/sh
+#
+# mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e 'show databases;'
+# mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e "SHOW VARIABLES LIKE 'max_allowed_packet';"
+# exit
+$
 ```
 
 # Clean
-```
-kubectl delete deployment mariadb-deployment
-kubectl delete cm mariadb-config
-kubectl delete secret mariadb-root-password mariadb-user-creds
+```console
+$ kubectl delete deployment mariadb-deployment
+deployment.apps "mariadb-deployment" deleted
+$ kubectl delete cm mariadb-config
+configmap "mariadb-config" deleted
+$ kubectl delete secret mariadb-root-password mariadb-user-creds
+secret "mariadb-root-password" deleted
+secret "mariadb-user-creds" deleted
 ```

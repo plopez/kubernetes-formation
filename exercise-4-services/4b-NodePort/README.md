@@ -5,8 +5,8 @@ You will create a Node Port service and access it.
 ## Create a Deployment
 
 Here is the deployment file:
-```sh
-cat << EOF > my-deployment-50000.yaml
+```console
+$ cat << EOF > my-deployment-50000.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,14 +32,10 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f my-deployment-50000.yaml
-```
-
 ## Create a Node Port service
 
-```sh
-cat << EOF > service.yaml
+```console
+$ cat << EOF > service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -57,29 +53,15 @@ spec:
 EOF
 ```
 
-```sh
-kubectl apply -f service.yaml
-```
-
-Ensure the service has entries in its endpoints:
-```sh
-kubectl describe svc my-np-service
-```
+Ensure the service has entries in its endpoints.
 
 ## Test the service connectivity
 
-Determine the public IP of any worker node:
-```sh
-kubectl get nodes --output wide
-```
-
+Determine the public IP of any worker node.
 Access the service
-```
-[NODE_IP_ADDRESS]:[NODE_PORT]
-# NODE_PORT is the random port given by kube
-```
+
 ## Clean all resources
 
-```sh
-kubectl  delete -f .
+```console
+$ kubectl  delete -f .
 ```

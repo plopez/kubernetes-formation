@@ -9,52 +9,44 @@ Finally, you will check you retrieve the written content if you create an other 
 ## See the storage Classes
 To allow dynamic allocation, we have created a StorageClass. See its details :
 
-```sh
-kubectl get storageClass
-kubectl describe storageClass [name storageClass]
+```console
+$ kubectl get storageClass
+$ kubectl describe storageClass <...>
 ```
 
 Create a Persistent Volume Claim to ask a 1Gi R/W storage.
 
 Declare the claim (be carefull, the provided `.yaml` file may be incorrect....)
-```sh
-cat << EOF > pv-claim.yaml
+```console
+$ cat << EOF > pv-claim.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: task-pv-claim
 spec:
   accessModes:
-    - ReadWriteOneRingToRuleThemAll
+    - ReadWriteOneToRuleThemAll
   resources:
     requests:
       storage: 1Gi
 EOF
 ```
 
-```sh
-kubectl apply -f pv-claim.yaml
-```
-
 Do you see a persistent volume automatically created ?
-```sh
-kubectl get pv
-```
-
 Why?
 
 ## Create a pod which references the Persistent Volume Claim
 
 Here is the pod spec:
-```sh
-cat << EOF > pv-pod.yaml
+```console
+$ cat << EOF > pv-pod.yaml
 kind: Pod
 apiVersion: v1
 metadata:
   name: task-pv-pod
 spec:
   volumes:
-    - name: task-pv-storage
+    - name: task-pv-storing
       persistentVolumeClaim:
        claimName: task-pv-claim
   containers:
@@ -69,24 +61,20 @@ spec:
 EOF
 ```
 
-Create the pod:
-```sh
-kubectl apply -f pv-pod.yaml
-```
+Create the pod.
 
 ## Write content to the persistent volume
 
-You should get a pv and a pod:
-```
-kubectl get pv,pod -o wide
-```
+You should get a pv and a pod.
 
-Now, write content to the persistent volume:
-```sh
-kubectl exec -it task-pv-pod -- bash
-echo 'K8s rules!' > /usr/share/nginx/html/index.html
-curl http://localhost
-exit
+Now, write content to the persistent volume.
+```console
+$ kubectl exec -it task-pv-pod -- bash
+root@task-pv-pod:/# echo 'K8s rules!' > /usr/share/nginx/html/index.html
+root@task-pv-pod:/# curl http://localhost
+K8s rules!
+root@task-pv-pod:/# exit
+$
 ```
 
 
@@ -94,22 +82,12 @@ exit
 
 Run the kubectl commands to delete the pod.
 Then create-it again.
-
 Check if the index.html file still exists.
 
-## Bonus: force the pod to be created on another node
-
-Note the worker node which hosts the pod.
-Then delete the task-pv-pod pod.
-
-Edit the `.yaml` file and use the `nodeName` field in the spec to indicate another worker node.
-
-Apply the changes.
-
-Is it possible?
-
 ## Clean
-```sh
-kubectl delete pvc task-pv-claim
-kubectl delete pod task-pv-pod
+```console
+$ kubectl delete pvc task-pv-claim
+persistentvolumeclaim "task-pv-claim" deleted
+$ kubectl delete pod task-pv-pod
+pod "task-pv-pod" deleted
 ```

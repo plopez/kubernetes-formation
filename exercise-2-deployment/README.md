@@ -9,14 +9,15 @@ You will see the interests of using deployment:
 ## Deploy version 1.0 with 2 replicas
 
 Create a deployment file with the following content (be carefull, the provided `.yaml` file may be incorrect! See [the documentation if needed](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#deploymentspec-v1-apps)):
-```
+```console
+$ cat << EOF > hello-v1.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-dep
   namespace: default
 spec:
-  replicas-numberOf: 2
+  number-of-replicas: 2
   selector:
     matchLabels:
       app: hello-dep
@@ -31,31 +32,26 @@ spec:
         name: hello-dep
         ports:
         - containerPort: 8080
+EOF
 ```
 
-Create the deployment:
-```sh
-kubectl apply -f hello-v1.yml
-```
-
-Ensure you have 2 running pods:
-```sh
-kubectl get deployment,pods
-```
+Create the deployment.
+Ensure you have 2 running pods.
 
 Now delete one of the 2 created pod:
-```sh
-kubectl delete pod/hello-dep-<XXXX>
+```console
+$ kubectl delete pod/hello-dep-<xxx>
 ```
 
 Wait few seconds to see a replacement pod for the one you deleted:
-```sh
-kubectl get deployment,pods
+```console
+$ kubectl get deployment,pods
 ```
 
 ## Deploy the version 2.0
 Create the following file
-```
+```console
+$ cat << EOF > hello-v2.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,26 +73,22 @@ spec:
         name: hello-dep
         ports:
         - containerPort: 8080
+EOF
  ```
 
-Apply the changes:
-```
-kubectl apply -f hello-v2.yml
-```
+Apply the changes.
 
 ## "Scale up" the application
 
 You will change the number of replicas:
-```sh
-kubectl scale deployment hello-dep --replicas=3
+```console
+$ kubectl scale deployment hello-dep --replicas=3
 ```
 
-Wait few seconds and count the pods:
-```sh
-kubectl get deployment,pods
-```
+Wait few seconds and count the pods.
 
 ## Clean all the resources
-```
-kubectl delete deployment --all
+```console
+$ kubectl delete deployment --all
+deployment.apps "hello-dep" deleted
 ```
