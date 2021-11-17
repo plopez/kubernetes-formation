@@ -11,19 +11,7 @@ To allow dynamic allocation, we have created a StorageClass. See its details :
 
 ```console
 $ kubectl get storageClass
-NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  60d
-$ kubectl describe storageClass local-path
-Name:                  local-path
-IsDefaultClass:        Yes
-Annotations:           objectset.rio.cattle.io/applied={"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{"objectset.rio.cattle.io/id":"","objectset.rio.cattle.io/owner-gvk":"k3s.cattle.io/v1, Kind=Addon","objectset.rio.cattle.io/owner-name":"local-storage","objectset.rio.cattle.io/owner-namespace":"kube-system","storageclass.kubernetes.io/is-default-class":"true"},"labels":{"objectset.rio.cattle.io/hash":"183f35c65ffbc3064603f43f1580d8c68a2dabd4"},"name":"local-path"},"provisioner":"rancher.io/local-path","reclaimPolicy":"Delete","volumeBindingMode":"WaitForFirstConsumer"},objectset.rio.cattle.io/id=,objectset.rio.cattle.io/owner-gvk=k3s.cattle.io/v1, Kind=Addon,objectset.rio.cattle.io/owner-name=local-storage,objectset.rio.cattle.io/owner-namespace=kube-system,storageclass.kubernetes.io/is-default-class=true
-Provisioner:           rancher.io/local-path
-Parameters:            <none>
-AllowVolumeExpansion:  <unset>
-MountOptions:          <none>
-ReclaimPolicy:         Delete
-VolumeBindingMode:     WaitForFirstConsumer
-Events:                <none>
+$ kubectl describe storageClass <...>
 ```
 
 Create a Persistent Volume Claim to ask a 1Gi R/W storage.
@@ -37,29 +25,15 @@ metadata:
   name: task-pv-claim
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOneToRuleThemAll
   resources:
     requests:
       storage: 1Gi
 EOF
 ```
 
-```console
-$ kubectl apply -f pv-claim.yaml
-persistentvolumeclaim/task-pv-claim created
-```
-
 Do you see a persistent volume automatically created ?
-```console
-$ kubectl get pv
-No resources found
-```
-
 Why?
-Because StorageClass defines
-VolumeBindingMode:     WaitForFirstConsumer
-So as long as there is no consumer, the PV is not created
-
 
 ## Create a pod which references the Persistent Volume Claim
 
@@ -72,7 +46,7 @@ metadata:
   name: task-pv-pod
 spec:
   volumes:
-    - name: task-pv-storage
+    - name: task-pv-storing
       persistentVolumeClaim:
        claimName: task-pv-claim
   containers:
@@ -87,25 +61,13 @@ spec:
 EOF
 ```
 
-Create the pod:
-```console
-$ kubectl apply -f pv-pod.yaml
-pod/task-pv-pod created
-```
+Create the pod.
 
 ## Write content to the persistent volume
 
-You should get a pv and a pod:
-```console
-$ kubectl get pv,pod -o wide
-NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS   REASON   AGE   VOLUMEMODE
-persistentvolume/pvc-1e251774-1dd0-4eab-82bc-f279be9ad8b5   1Gi        RWO            Delete           Bound    default/task-pv-claim   local-path              8s    Filesystem
+You should get a pv and a pod.
 
-NAME              READY   STATUS    RESTARTS   AGE   IP           NODE    NOMINATED NODE   READINESS GATES
-pod/task-pv-pod   1/1     Running   0          21s   10.42.0.33   node-0   <none>           <none>
-```
-
-Now, write content to the persistent volume:
+Now, write content to the persistent volume.
 ```console
 $ kubectl exec -it task-pv-pod -- bash
 root@task-pv-pod:/# echo 'K8s rules!' > /usr/share/nginx/html/index.html
@@ -121,18 +83,6 @@ $
 Run the kubectl commands to delete the pod.
 Then create-it again.
 Check if the index.html file still exists.
-
-```console
-$ kubectl delete pod task-pv-pod
-pod "task-pv-pod" deleted
-$ kubectl apply -f pv-pod.yaml
-pod/task-pv-pod created
-$ kubectl exec task-pv-pod -- curl "http://localhost"
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100    11  100    11    0     0  11000      0 --:--:-- --:--:-- --:--:-- 11000
-K8s rules!
-```
 
 ## Clean
 ```console
