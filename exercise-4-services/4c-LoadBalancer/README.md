@@ -56,7 +56,7 @@ EOF
 ## Test the service connectivity
 
 Get the LB external IP.
-Access the service (It may take minutes for the LB to be configured)
+Access the service.
 
 ## Clean all resources
 
