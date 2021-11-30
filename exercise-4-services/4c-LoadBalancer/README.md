@@ -72,9 +72,9 @@ NAME            TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)           
 my-lb-service   LoadBalancer   10.43.175.183   10.66.250.29   60000:32486/TCP   29s   app=products,department=sales
 ```
 
-Access the service (It may take minutes for the LB to be configured)
+Access the service
 ```console
-$ curl http://212.47.251.109:60000
+$ curl http://10.66.250.29:60000
 Hello, world!
 Version: 2.0.0
 Hostname: my-deployment-50001-5666887c6-f2q6j
